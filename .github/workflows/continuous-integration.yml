@@ -51,7 +51,7 @@ jobs:
       # Organización de la cuenta de Sonar: miw-upm-github
       - name: 🏷️ Extract artifact from pom & Sonar Organization
         run: |
-          echo "ORGANIZATION=miw-upm-github" >> $GITHUB_ENV
+          echo "ORGANIZATION=davidpaz06" >> $GITHUB_ENV
           echo "ARTIFACT=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" >> $GITHUB_ENV
 
       - name: 📊 Sonar Analysis
