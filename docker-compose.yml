@@ -4,7 +4,11 @@ services:
     image: devops:latest
     restart: always
     ports:
-      - "8080:8080"
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/IWVG
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: davidpaz06
     networks:
       - devopsNet
 
