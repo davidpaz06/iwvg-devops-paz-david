@@ -3,8 +3,8 @@
 > Este proyecto es un apoyo docente de la asignatura. Cada release liberada corresponde al código utilizado en clase del curso indicado
 
 [![GitHub](https://img.shields.io/github/license/miw-upm/iwvg-devops?color=informational)](https://github.com/miw-upm/iwvg-devops/blob/develop/LICENSE.md)
-[![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/miw-upm/iwvg-devops?color=informational)](https://github.com/miw-upm/iwvg-devops/releases)
-![GitHub Release Date](https://img.shields.io/github/release-date/miw-upm/iwvg-devops?color=informational)
+[![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/davidpaz06/iwvg-devops-paz-david?color=informational)](https://github.com/miw-upm/iwvg-devops/releases)
+![GitHub Release Date](https://img.shields.io/github/release-date/david-paz06/iwvg-devops-paz_david?color=informational)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/miw-upm/iwvg-devops)
 ![GitHub issues](https://img.shields.io/github/issues/miw-upm/iwvg-devops?color=important)
 ![GitHub closed issues](https://img.shields.io/github/issues-closed/miw-upm/iwvg-devops?color=informational)
