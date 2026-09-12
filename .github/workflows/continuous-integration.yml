@@ -1,7 +1,7 @@
 name: CI
 on:
   push:
-    branches: [develop,release-*]
+    branches: [develop,v-*]
 
 jobs:
   devops:
@@ -11,6 +11,21 @@ jobs:
       contents: read
       actions: read
       security-events: write
+
+    services:
+      postgres:
+        image: postgres:15.10
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          POSTGRES_DB: IWVG
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres -d IWVG"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=5
 
     steps:
       - name: ⬇️ Checkout repository
@@ -31,17 +46,17 @@ jobs:
           languages: java
           queries: security-extended
 
+      - name: 🗄️ Init database schema & data
+        run: |
+          psql -h localhost -p 5433 -U postgres -d IWVG -f db/01-schema.sql
+          psql -h localhost -p 5433 -U postgres -d IWVG -f db/02-data.sql
+        env:
+          PGPASSWORD: ${{ secrets.DB_PASSWORD }}
+
       - name: ✅ Run Unit & Integration Test & Functional Test
         run: mvn -B verify
-
-      - name: 🔔 Notify Slack on failure
-        if: failure()
-        uses: 8398a7/action-slack@v3
-        with:
-          status: ${{ job.status }}
-          fields: repo,author,commit,author,workflow,
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
       - name: 🔍 CodeQL Analysis
         uses: github/codeql-action/analyze@v3
@@ -51,13 +66,35 @@ jobs:
       # Organización de la cuenta de Sonar: miw-upm-github
       - name: 🏷️ Extract artifact from pom & Sonar Organization
         run: |
-          echo "ORGANIZATION=miw-upm-github" >> $GITHUB_ENV
+          echo "ORGANIZATION=davidpaz06" >> $GITHUB_ENV
           echo "ARTIFACT=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" >> $GITHUB_ENV
 
       - name: 📊 Sonar Analysis
         run: >
           mvn -B sonar:sonar
           -Dsonar.projectKey=${{ env.ORGANIZATION }}_${{ env.ARTIFACT }}
-          -Dsonar.organization=${{ env.ORGANIZATION }}
-          -Dsonar.host.url=https://sonarcloud.io 
+          -Dsonar.organization=davidpaz06
+          -Dsonar.host.url=https://sonarcloud.io
           -Dsonar.token=${{ secrets.SONAR_TOKEN }}
+
+      - name: ✅ Notify Slack on success
+        if: success()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: success
+          fields: repo,message,commit,author,action,eventName,workflow,job,took
+          text: "✅ CI OK en `${{ github.ref_name }}`"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: 🔔 Notify Slack on failure
+        if: failure()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          fields: repo,message,commit,author,action,eventName,workflow,job,took
+          text: "❌ CI falló en `${{ github.ref_name }}`"
+          mention: here
+          if_mention: failure
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
