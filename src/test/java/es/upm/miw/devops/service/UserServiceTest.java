@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,5 +48,45 @@ class UserServiceTest {
                 .isInstanceOf(ResponseStatusException.class)
                 .extracting(exception -> ((ResponseStatusException) exception).getStatusCode())
                 .isEqualTo(NOT_FOUND);
+    }
+
+    @Test
+    void testReadAllWithoutFilter() {
+        User billable = billableUser();
+        User notBillable = new User();
+        when(userRepository.findAll()).thenReturn(List.of(billable, notBillable));
+
+        assertThat(userService.readAll(null)).hasSize(2);
+    }
+
+    @Test
+    void testReadAllBillableTrue() {
+        User billable = billableUser();
+        User notBillable = new User();
+        when(userRepository.findAll()).thenReturn(List.of(billable, notBillable));
+
+        assertThat(userService.readAll(true)).containsExactly(billable);
+    }
+
+    @Test
+    void testReadAllBillableFalse() {
+        User billable = billableUser();
+        User notBillable = new User();
+        when(userRepository.findAll()).thenReturn(List.of(billable, notBillable));
+
+        assertThat(userService.readAll(false)).containsExactly(notBillable);
+    }
+
+    private User billableUser() {
+        User user = new User();
+        user.setName("Oscar");
+        user.setFamilyName("Fernandez");
+        user.setEmail("oscar@upm.es");
+        user.setIdentity("12345678A");
+        user.setAddress("Calle Falsa 123");
+        user.setCity("Madrid");
+        user.setProvince("Madrid");
+        user.setPostalCode("28000");
+        return user;
     }
 }

@@ -39,4 +39,38 @@ class UserResourceFT {
                 .exchange()
                 .expectStatus().isNotFound();
     }
+
+    @Test
+    void testReadAllWithoutFilter() {
+        webTestClient.get()
+                .uri(USERS)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(User.class)
+                .value(users -> assertThat(users).extracting(User::getId).contains(1L));
+    }
+
+    @Test
+    void testReadAllNotBillable() {
+        webTestClient.get()
+                .uri(USERS + "?billable=false")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(User.class)
+                .value(users -> assertThat(users)
+                        .extracting(User::getId)
+                        .contains(1L));
+    }
+
+    @Test
+    void testReadAllBillable() {
+        webTestClient.get()
+                .uri(USERS + "?billable=true")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(User.class)
+                .value(users -> assertThat(users)
+                        .extracting(User::getId)
+                        .doesNotContain(1L));
+    }
 }
