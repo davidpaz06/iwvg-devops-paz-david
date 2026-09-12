@@ -12,6 +12,21 @@ jobs:
       actions: read
       security-events: write
 
+    services:
+      postgres:
+        image: postgres:15.10
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: davidpaz06
+          POSTGRES_DB: IWVG
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres -d IWVG"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=5
+
     steps:
       - name: ⬇️ Checkout repository
         uses: actions/checkout@v4
@@ -30,6 +45,13 @@ jobs:
         with:
           languages: java
           queries: security-extended
+
+      - name: 🗄️ Init database schema & data
+        run: |
+          psql -h localhost -p 5433 -U postgres -d IWVG -f db/01-schema.sql
+          psql -h localhost -p 5433 -U postgres -d IWVG -f db/02-data.sql
+        env:
+          PGPASSWORD: davidpaz06
 
       - name: ✅ Run Unit & Integration Test & Functional Test
         run: mvn -B verify
