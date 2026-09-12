@@ -14,6 +14,8 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -75,6 +77,26 @@ class UserServiceTest {
         when(userRepository.findAll()).thenReturn(List.of(billable, notBillable));
 
         assertThat(userService.readAll(false)).containsExactly(notBillable);
+    }
+
+    @Test
+    void testDeleteByIdFound() {
+        when(userRepository.existsById(1L)).thenReturn(true);
+
+        userService.deleteById(1L);
+
+        verify(userRepository).deleteById(1L);
+    }
+
+    @Test
+    void testDeleteByIdNotFound() {
+        when(userRepository.existsById(999L)).thenReturn(false);
+
+        assertThatThrownBy(() -> userService.deleteById(999L))
+                .isInstanceOf(ResponseStatusException.class)
+                .extracting(exception -> ((ResponseStatusException) exception).getStatusCode())
+                .isEqualTo(NOT_FOUND);
+        verify(userRepository, never()).deleteById(999L);
     }
 
     private User billableUser() {
