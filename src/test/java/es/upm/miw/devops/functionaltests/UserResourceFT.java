@@ -1,6 +1,6 @@
 package es.upm.miw.devops.functionaltests;
 
-import es.upm.miw.devops.code.User;
+import es.upm.miw.devops.persistence.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;

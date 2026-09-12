@@ -1,6 +1,6 @@
 package es.upm.miw.devops.rest;
 
-import es.upm.miw.devops.code.User;
+import es.upm.miw.devops.persistence.User;
 import es.upm.miw.devops.service.UserService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,7 +21,7 @@ public class UserResource {
     }
 
     @GetMapping(ID_ID)
-    public User readById(@PathVariable String id) {
+    public User readById(@PathVariable Long id) {
         return this.userService.readById(id);
     }
 }
