@@ -3,8 +3,8 @@
 > Este proyecto es un apoyo docente de la asignatura. Cada release liberada corresponde al código utilizado en clase del curso indicado
 
 [![GitHub](https://img.shields.io/github/license/davidpaz06/iwvg-devops-paz-david?color=informational)](https://github.com/davidpaz06/iwvg-devops-paz-david/blob/develop/LICENSE.md)
-[![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/davidpaz06/iwvg-devops-paz-david?color=informational)](https://github.com/davidpaz06/iwvg-devops-paz-david/releases)
-![GitHub Release Date](https://img.shields.io/github/release-date/davidpaz06/iwvg-devops-paz-david?color=informational)
+[![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/davidpaz06/iwvg-devops-paz-david?include_prereleases&color=informational)](https://github.com/davidpaz06/iwvg-devops-paz-david/releases)
+![GitHub Release Date](https://img.shields.io/github/release-date-pre/davidpaz06/iwvg-devops-paz-david?color=informational)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/davidpaz06/iwvg-devops-paz-david)
 ![GitHub issues](https://img.shields.io/github/issues/davidpaz06/iwvg-devops-paz-david?color=important)
 ![GitHub closed issues](https://img.shields.io/github/issues-closed/davidpaz06/iwvg-devops-paz-david?color=informational)
