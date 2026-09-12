@@ -17,7 +17,7 @@ jobs:
         image: postgres:15.10
         env:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: davidpaz06
+          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
           POSTGRES_DB: IWVG
         ports:
           - 5433:5432
@@ -51,10 +51,12 @@ jobs:
           psql -h localhost -p 5433 -U postgres -d IWVG -f db/01-schema.sql
           psql -h localhost -p 5433 -U postgres -d IWVG -f db/02-data.sql
         env:
-          PGPASSWORD: davidpaz06
+          PGPASSWORD: ${{ secrets.DB_PASSWORD }}
 
       - name: ✅ Run Unit & Integration Test & Functional Test
         run: mvn -B verify
+        env:
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
       - name: 🔍 CodeQL Analysis
         uses: github/codeql-action/analyze@v3
