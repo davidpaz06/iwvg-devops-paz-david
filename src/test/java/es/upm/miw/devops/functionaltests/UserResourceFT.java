@@ -1,6 +1,7 @@
 package es.upm.miw.devops.functionaltests;
 
 import es.upm.miw.devops.persistence.User;
+import es.upm.miw.devops.persistence.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -18,6 +19,9 @@ class UserResourceFT {
 
     @Autowired
     private WebTestClient webTestClient;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Test
     void testReadByIdFound() {
@@ -72,5 +76,28 @@ class UserResourceFT {
                 .value(users -> assertThat(users)
                         .extracting(User::getId)
                         .doesNotContain(1L));
+    }
+
+    @Test
+    void testDeleteByIdFound() {
+        User user = new User();
+        user.setName("Temp");
+        user.setFamilyName("Temp");
+        Long id = userRepository.save(user).getId();
+
+        webTestClient.delete()
+                .uri(USERS + "/" + id)
+                .exchange()
+                .expectStatus().isNoContent();
+
+        assertThat(userRepository.existsById(id)).isFalse();
+    }
+
+    @Test
+    void testDeleteByIdNotFound() {
+        webTestClient.delete()
+                .uri(USERS + "/999")
+                .exchange()
+                .expectStatus().isNotFound();
     }
 }
