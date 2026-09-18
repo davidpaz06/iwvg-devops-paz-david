@@ -100,4 +100,30 @@ class UserResourceFT {
                 .exchange()
                 .expectStatus().isNotFound();
     }
+
+    @Test
+    void testUpdateActiveFound() {
+        User user = new User();
+        user.setName("Temp");
+        user.setFamilyName("Temp");
+        user.setActive(true);
+        Long id = userRepository.save(user).getId();
+
+        webTestClient.put()
+                .uri(USERS + "/" + id + "/active")
+                .bodyValue(false)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(User.class)
+                .value(updated -> assertThat(updated.isActive()).isFalse());
+    }
+
+    @Test
+    void testUpdateActiveNotFound() {
+        webTestClient.put()
+                .uri(USERS + "/999/active")
+                .bodyValue(false)
+                .exchange()
+                .expectStatus().isNotFound();
+    }
 }
