@@ -1,11 +1,13 @@
 package es.upm.miw.devops.rest;
 
 import es.upm.miw.devops.persistence.User;
+import es.upm.miw.devops.rest.dto.UserActiveRequest;
 import es.upm.miw.devops.rest.dto.UserRequest;
 import es.upm.miw.devops.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -54,5 +56,10 @@ public class UserResource {
     @PutMapping(ID_ID)
     public User update(@PathVariable Long id, @RequestBody UserRequest request) {
         return this.userService.update(id, request);
+    }
+
+    @PatchMapping
+    public List<User> updateActive(@RequestBody List<UserActiveRequest> requests) {
+        return this.userService.updateActive(requests);
     }
 }
