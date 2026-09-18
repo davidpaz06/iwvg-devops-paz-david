@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5433/IWVG
+    url: jdbc:postgresql://localhost:5433/iwvgdevopsdb
     username: postgres
     password: ${DB_PASSWORD}
   jpa:
