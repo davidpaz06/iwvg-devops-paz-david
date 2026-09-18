@@ -2,6 +2,7 @@ package es.upm.miw.devops.service;
 
 import es.upm.miw.devops.persistence.User;
 import es.upm.miw.devops.persistence.UserRepository;
+import es.upm.miw.devops.rest.dto.UserRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -132,15 +133,9 @@ class UserServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(existing));
         when(userRepository.save(existing)).thenReturn(existing);
 
-        User payload = new User();
-        payload.setName("Oscar Updated");
-        payload.setFamilyName("Fernandez Updated");
-        payload.setEmail("oscar@upm.es");
-        payload.setIdentity("12345678A");
-        payload.setAddress("Calle Falsa 123");
-        payload.setCity("Madrid");
-        payload.setProvince("Madrid");
-        payload.setPostalCode("28000");
+        UserRequest payload = new UserRequest(
+                "Oscar Updated", "Fernandez Updated", "oscar@upm.es", "12345678A",
+                "Calle Falsa 123", "Madrid", "Madrid", "28000");
 
         User updated = userService.update(1L, payload);
 
@@ -159,7 +154,7 @@ class UserServiceTest {
     void testUpdateNotFound() {
         when(userRepository.findById(999L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> userService.update(999L, new User()))
+        assertThatThrownBy(() -> userService.update(999L, new UserRequest(null, null, null, null, null, null, null, null)))
                 .isInstanceOf(ResponseStatusException.class)
                 .extracting(exception -> ((ResponseStatusException) exception).getStatusCode())
                 .isEqualTo(NOT_FOUND);
