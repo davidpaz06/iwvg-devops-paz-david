@@ -2,6 +2,7 @@ package es.upm.miw.devops.functionaltests;
 
 import es.upm.miw.devops.persistence.User;
 import es.upm.miw.devops.persistence.UserRepository;
+import es.upm.miw.devops.rest.dto.UserActiveRequest;
 import es.upm.miw.devops.rest.dto.UserRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,8 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
+
+import java.util.List;
 
 import static es.upm.miw.devops.rest.UserResource.USERS;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -156,6 +159,40 @@ class UserResourceFT {
         webTestClient.put()
                 .uri(USERS + "/999")
                 .bodyValue(new UserRequest(null, null, null, null, null, null, null, null))
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
+    void testUpdateActiveBulkFound() {
+        User user1 = new User();
+        user1.setName("Temp1");
+        user1.setFamilyName("Temp1");
+        user1.setActive(true);
+        Long id1 = userRepository.save(user1).getId();
+
+        User user2 = new User();
+        user2.setName("Temp2");
+        user2.setFamilyName("Temp2");
+        user2.setActive(true);
+        Long id2 = userRepository.save(user2).getId();
+
+        webTestClient.patch()
+                .uri(USERS)
+                .bodyValue(List.of(
+                        new UserActiveRequest(id1, false),
+                        new UserActiveRequest(id2, false)))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(User.class)
+                .value(users -> assertThat(users).extracting(User::isActive).containsExactly(false, false));
+    }
+
+    @Test
+    void testUpdateActiveBulkNotFound() {
+        webTestClient.patch()
+                .uri(USERS)
+                .bodyValue(List.of(new UserActiveRequest(999L, false)))
                 .exchange()
                 .expectStatus().isNotFound();
     }
