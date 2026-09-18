@@ -126,4 +126,42 @@ class UserResourceFT {
                 .exchange()
                 .expectStatus().isNotFound();
     }
+
+    @Test
+    void testUpdateFound() {
+        User user = new User();
+        user.setName("Temp");
+        user.setFamilyName("Temp");
+        Long id = userRepository.save(user).getId();
+
+        User payload = new User();
+        payload.setName("Updated");
+        payload.setFamilyName("Updated");
+        payload.setEmail("updated@upm.es");
+        payload.setIdentity("00000000A");
+        payload.setAddress("Nueva Calle 1");
+        payload.setCity("Madrid");
+        payload.setProvince("Madrid");
+        payload.setPostalCode("28001");
+
+        webTestClient.put()
+                .uri(USERS + "/" + id)
+                .bodyValue(payload)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(User.class)
+                .value(updated -> {
+                    assertThat(updated.getName()).isEqualTo("Updated");
+                    assertThat(updated.getEmail()).isEqualTo("updated@upm.es");
+                });
+    }
+
+    @Test
+    void testUpdateNotFound() {
+        webTestClient.put()
+                .uri(USERS + "/999")
+                .bodyValue(new User())
+                .exchange()
+                .expectStatus().isNotFound();
+    }
 }
