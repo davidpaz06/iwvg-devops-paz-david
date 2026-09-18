@@ -124,6 +124,48 @@ class UserServiceTest {
         verify(userRepository, never()).save(any());
     }
 
+    @Test
+    void testUpdateFound() {
+        User existing = new User();
+        existing.setName("Oscar");
+        existing.setFamilyName("Fernandez");
+        when(userRepository.findById(1L)).thenReturn(Optional.of(existing));
+        when(userRepository.save(existing)).thenReturn(existing);
+
+        User payload = new User();
+        payload.setName("Oscar Updated");
+        payload.setFamilyName("Fernandez Updated");
+        payload.setEmail("oscar@upm.es");
+        payload.setIdentity("12345678A");
+        payload.setAddress("Calle Falsa 123");
+        payload.setCity("Madrid");
+        payload.setProvince("Madrid");
+        payload.setPostalCode("28000");
+
+        User updated = userService.update(1L, payload);
+
+        assertThat(updated.getName()).isEqualTo("Oscar Updated");
+        assertThat(updated.getFamilyName()).isEqualTo("Fernandez Updated");
+        assertThat(updated.getEmail()).isEqualTo("oscar@upm.es");
+        assertThat(updated.getIdentity()).isEqualTo("12345678A");
+        assertThat(updated.getAddress()).isEqualTo("Calle Falsa 123");
+        assertThat(updated.getCity()).isEqualTo("Madrid");
+        assertThat(updated.getProvince()).isEqualTo("Madrid");
+        assertThat(updated.getPostalCode()).isEqualTo("28000");
+        verify(userRepository).save(existing);
+    }
+
+    @Test
+    void testUpdateNotFound() {
+        when(userRepository.findById(999L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> userService.update(999L, new User()))
+                .isInstanceOf(ResponseStatusException.class)
+                .extracting(exception -> ((ResponseStatusException) exception).getStatusCode())
+                .isEqualTo(NOT_FOUND);
+        verify(userRepository, never()).save(any());
+    }
+
     private User billableUser() {
         User user = new User();
         user.setName("Oscar");

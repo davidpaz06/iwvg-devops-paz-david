@@ -49,4 +49,9 @@ public class UserResource {
     public User updateActive(@PathVariable Long id, @RequestBody boolean active) {
         return this.userService.updateActive(id, active);
     }
+
+    @PutMapping(ID_ID)
+    public User update(@PathVariable Long id, @RequestBody User user) {
+        return this.userService.update(id, user);
+    }
 }
