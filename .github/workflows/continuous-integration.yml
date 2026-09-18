@@ -18,11 +18,11 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          POSTGRES_DB: IWVG
+          POSTGRES_DB: iwvgdevopsdb
         ports:
           - 5433:5432
         options: >-
-          --health-cmd="pg_isready -U postgres -d IWVG"
+          --health-cmd="pg_isready -U postgres -d iwvgdevopsdb"
           --health-interval=5s
           --health-timeout=5s
           --health-retries=5
@@ -48,8 +48,8 @@ jobs:
 
       - name: 🗄️ Init database schema & data
         run: |
-          psql -h localhost -p 5433 -U postgres -d IWVG -f db/01-schema.sql
-          psql -h localhost -p 5433 -U postgres -d IWVG -f db/02-data.sql
+          psql -h localhost -p 5433 -U postgres -d iwvgdevopsdb -f db/01-schema.sql
+          psql -h localhost -p 5433 -U postgres -d iwvgdevopsdb -f db/02-data.sql
         env:
           PGPASSWORD: ${{ secrets.DB_PASSWORD }}
 
