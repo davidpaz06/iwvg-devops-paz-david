@@ -45,4 +45,17 @@ public class UserService {
         user.setActive(active);
         return this.userRepository.save(user);
     }
+
+    public User update(Long id, User payload) {
+        User user = this.readById(id);
+        user.setName(payload.getName());
+        user.setFamilyName(payload.getFamilyName());
+        user.setEmail(payload.getEmail());
+        user.setIdentity(payload.getIdentity());
+        user.setAddress(payload.getAddress());
+        user.setCity(payload.getCity());
+        user.setProvince(payload.getProvince());
+        user.setPostalCode(payload.getPostalCode());
+        return this.userRepository.save(user);
+    }
 }
