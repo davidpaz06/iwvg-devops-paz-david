@@ -2,6 +2,7 @@ package es.upm.miw.devops.functionaltests;
 
 import es.upm.miw.devops.persistence.User;
 import es.upm.miw.devops.persistence.UserRepository;
+import es.upm.miw.devops.rest.dto.UserRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -134,15 +135,9 @@ class UserResourceFT {
         user.setFamilyName("Temp");
         Long id = userRepository.save(user).getId();
 
-        User payload = new User();
-        payload.setName("Updated");
-        payload.setFamilyName("Updated");
-        payload.setEmail("updated@upm.es");
-        payload.setIdentity("00000000A");
-        payload.setAddress("Nueva Calle 1");
-        payload.setCity("Madrid");
-        payload.setProvince("Madrid");
-        payload.setPostalCode("28001");
+        UserRequest payload = new UserRequest(
+                "Updated", "Updated", "updated@upm.es", "00000000A",
+                "Nueva Calle 1", "Madrid", "Madrid", "28001");
 
         webTestClient.put()
                 .uri(USERS + "/" + id)
@@ -160,7 +155,7 @@ class UserResourceFT {
     void testUpdateNotFound() {
         webTestClient.put()
                 .uri(USERS + "/999")
-                .bodyValue(new User())
+                .bodyValue(new UserRequest(null, null, null, null, null, null, null, null))
                 .exchange()
                 .expectStatus().isNotFound();
     }

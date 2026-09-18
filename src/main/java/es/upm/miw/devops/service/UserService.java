@@ -2,6 +2,7 @@ package es.upm.miw.devops.service;
 
 import es.upm.miw.devops.persistence.User;
 import es.upm.miw.devops.persistence.UserRepository;
+import es.upm.miw.devops.rest.dto.UserRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -46,16 +47,16 @@ public class UserService {
         return this.userRepository.save(user);
     }
 
-    public User update(Long id, User payload) {
+    public User update(Long id, UserRequest request) {
         User user = this.readById(id);
-        user.setName(payload.getName());
-        user.setFamilyName(payload.getFamilyName());
-        user.setEmail(payload.getEmail());
-        user.setIdentity(payload.getIdentity());
-        user.setAddress(payload.getAddress());
-        user.setCity(payload.getCity());
-        user.setProvince(payload.getProvince());
-        user.setPostalCode(payload.getPostalCode());
+        user.setName(request.name());
+        user.setFamilyName(request.familyName());
+        user.setEmail(request.email());
+        user.setIdentity(request.identity());
+        user.setAddress(request.address());
+        user.setCity(request.city());
+        user.setProvince(request.province());
+        user.setPostalCode(request.postalCode());
         return this.userRepository.save(user);
     }
 }
