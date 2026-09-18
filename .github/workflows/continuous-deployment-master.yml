@@ -54,6 +54,8 @@ jobs:
       # 2. En GitHub: Settings → Secrets and variables → Actions → crear secret: RENDER_DEPLOY_HOOK_TOKEN
 #      - name: 🚀 Deploy on Render
 #        run: |
-#          curl --fail -X POST "https://api.render.com/deploy/${{ secrets.RENDER_DEPLOY_HOOK_TOKEN }}" \
+#          curl --fail -X POST "https://api.render.com/deploy/$RENDER_DEPLOY_HOOK_TOKEN" \
 #          && echo "✅ Deployment succeeded" \
 #          || (echo "❌ Deployment failed" && exit 1)
+#        env:
+#          RENDER_DEPLOY_HOOK_TOKEN: ${{ secrets.RENDER_DEPLOY_HOOK_TOKEN }}

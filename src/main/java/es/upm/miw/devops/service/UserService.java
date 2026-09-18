@@ -2,9 +2,11 @@ package es.upm.miw.devops.service;
 
 import es.upm.miw.devops.persistence.User;
 import es.upm.miw.devops.persistence.UserRepository;
+import es.upm.miw.devops.rest.dto.UserActiveRequest;
 import es.upm.miw.devops.rest.dto.UserRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -58,5 +60,12 @@ public class UserService {
         user.setProvince(request.province());
         user.setPostalCode(request.postalCode());
         return this.userRepository.save(user);
+    }
+
+    @Transactional
+    public List<User> updateActive(List<UserActiveRequest> requests) {
+        return requests.stream()
+                .map(request -> this.updateActive(request.id(), request.active()))
+                .toList();
     }
 }
