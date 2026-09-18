@@ -50,11 +50,12 @@ jobs:
             ${{ env.GHCR_URL }}/${{ env.REPOSITORY }}:latest
 
       # 🌐 Render Deployment
-      # 1. En Render: Web Service → Settings → Deploy Hook → copiar el token
+      # 1. En Render: Web Service → Settings → Deploy Hook → copiar la URL COMPLETA
       # 2. En GitHub: Settings → Secrets and variables → Actions → crear secret: RENDER_DEPLOY_HOOK_TOKEN
+      #    Valor: la URL completa, ej. https://api.render.com/deploy/srv-XXXX?key=YYYY
       - name: 🚀 Deploy on Render
         run: |
-          curl --fail -X POST "https://api.render.com/deploy/$RENDER_DEPLOY_HOOK_TOKEN" \
+          curl --fail -X POST "$RENDER_DEPLOY_HOOK_TOKEN" \
           && echo "✅ Deployment succeeded" \
           || (echo "❌ Deployment failed" && exit 1)
         env:
