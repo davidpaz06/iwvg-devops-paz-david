@@ -1,6 +1,7 @@
 package es.upm.miw.devops.rest;
 
 import es.upm.miw.devops.persistence.User;
+import es.upm.miw.devops.rest.dto.UserRequest;
 import es.upm.miw.devops.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -51,7 +52,7 @@ public class UserResource {
     }
 
     @PutMapping(ID_ID)
-    public User update(@PathVariable Long id, @RequestBody User user) {
-        return this.userService.update(id, user);
+    public User update(@PathVariable Long id, @RequestBody UserRequest request) {
+        return this.userService.update(id, request);
     }
 }
