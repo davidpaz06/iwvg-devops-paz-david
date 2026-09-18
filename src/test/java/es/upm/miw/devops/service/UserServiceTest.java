@@ -14,6 +14,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -97,6 +98,30 @@ class UserServiceTest {
                 .extracting(exception -> ((ResponseStatusException) exception).getStatusCode())
                 .isEqualTo(NOT_FOUND);
         verify(userRepository, never()).deleteById(999L);
+    }
+
+    @Test
+    void testUpdateActiveFound() {
+        User user = new User();
+        user.setActive(true);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.save(user)).thenReturn(user);
+
+        User updated = userService.updateActive(1L, false);
+
+        assertThat(updated.isActive()).isFalse();
+        verify(userRepository).save(user);
+    }
+
+    @Test
+    void testUpdateActiveNotFound() {
+        when(userRepository.findById(999L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> userService.updateActive(999L, false))
+                .isInstanceOf(ResponseStatusException.class)
+                .extracting(exception -> ((ResponseStatusException) exception).getStatusCode())
+                .isEqualTo(NOT_FOUND);
+        verify(userRepository, never()).save(any());
     }
 
     private User billableUser() {
