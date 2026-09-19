@@ -20,6 +20,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @ExtendWith(MockitoExtension.class)
@@ -127,6 +128,33 @@ class UserServiceTest {
     }
 
     @Test
+    void testUpdateActiveAdminCannotBeDeactivated() {
+        User admin = new User();
+        admin.setRole("ADMIN");
+        admin.setActive(true);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(admin));
+
+        assertThatThrownBy(() -> userService.updateActive(1L, false))
+                .isInstanceOf(ResponseStatusException.class)
+                .extracting(exception -> ((ResponseStatusException) exception).getStatusCode())
+                .isEqualTo(CONFLICT);
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    void testUpdateActiveAdminCanBeActivated() {
+        User admin = new User();
+        admin.setRole("ADMIN");
+        admin.setActive(false);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(admin));
+        when(userRepository.save(admin)).thenReturn(admin);
+
+        User updated = userService.updateActive(1L, true);
+
+        assertThat(updated.isActive()).isTrue();
+    }
+
+    @Test
     void testUpdateFound() {
         User existing = new User();
         existing.setName("Oscar");
@@ -188,6 +216,20 @@ class UserServiceTest {
                 .isInstanceOf(ResponseStatusException.class)
                 .extracting(exception -> ((ResponseStatusException) exception).getStatusCode())
                 .isEqualTo(NOT_FOUND);
+    }
+
+    @Test
+    void testUpdateActiveBulkAdminCannotBeDeactivated() {
+        User admin = new User();
+        admin.setRole("ADMIN");
+        admin.setActive(true);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(admin));
+
+        assertThatThrownBy(() -> userService.updateActive(List.of(new UserActiveRequest(1L, false))))
+                .isInstanceOf(ResponseStatusException.class)
+                .extracting(exception -> ((ResponseStatusException) exception).getStatusCode())
+                .isEqualTo(CONFLICT);
+        verify(userRepository, never()).save(any());
     }
 
     private User billableUser() {
