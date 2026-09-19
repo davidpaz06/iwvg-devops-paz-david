@@ -132,6 +132,22 @@ class UserResourceFT {
     }
 
     @Test
+    void testUpdateActiveAdminCannotBeDeactivated() {
+        User admin = new User();
+        admin.setName("Temp");
+        admin.setFamilyName("Admin");
+        admin.setRole("ADMIN");
+        admin.setActive(true);
+        Long id = userRepository.save(admin).getId();
+
+        webTestClient.put()
+                .uri(USERS + "/" + id + "/active")
+                .bodyValue(false)
+                .exchange()
+                .expectStatus().isEqualTo(409);
+    }
+
+    @Test
     void testUpdateFound() {
         User user = new User();
         user.setName("Temp");
@@ -195,5 +211,21 @@ class UserResourceFT {
                 .bodyValue(List.of(new UserActiveRequest(999L, false)))
                 .exchange()
                 .expectStatus().isNotFound();
+    }
+
+    @Test
+    void testUpdateActiveBulkAdminCannotBeDeactivated() {
+        User admin = new User();
+        admin.setName("Temp");
+        admin.setFamilyName("Admin");
+        admin.setRole("ADMIN");
+        admin.setActive(true);
+        Long id = userRepository.save(admin).getId();
+
+        webTestClient.patch()
+                .uri(USERS)
+                .bodyValue(List.of(new UserActiveRequest(id, false)))
+                .exchange()
+                .expectStatus().isEqualTo(409);
     }
 }
