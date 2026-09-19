@@ -12,7 +12,7 @@
 ### Estado del código
 [![DevOps](https://github.com/davidpaz06/iwvg-devops-paz-david/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/davidpaz06/iwvg-devops-paz-david/actions/workflows/continuous-integration.yml)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=davidpaz06_iwvg-devops-paz-david&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=davidpaz06_iwvg-devops-paz-david)
-[![AWS](https://img.shields.io/badge/deploy-AWS%20Lightsail-orange?logo=amazonaws)](https://github.com/davidpaz06/iwvg-devops-paz-david/blob/master/.github/workflows/continuous-deployment-master.yml)
+[![AWS](http://15.216.108.220:8080/version-badge)](http://15.216.108.220:8080/)
 
 
 ### Tecnologías necesarias
