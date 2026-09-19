@@ -58,10 +58,7 @@
         <!-- OpenAPI -->
         <springdoc-openapi-starter-webmvc-ui.version>2.8.12</springdoc-openapi-starter-webmvc-ui.version>
         <!-- Sonar: es.upm.miw.devops.code.** son ejercicios de clase, no forman parte de la app; Application es boilerplate de arranque -->
-        <sonar.coverage.exclusions>
-            es/upm/miw/devops/code/**,
-            es/upm/miw/devops/Application.java
-        </sonar.coverage.exclusions>
+        <sonar.coverage.exclusions>**/es/upm/miw/devops/code/**,**/es/upm/miw/devops/Application.java</sonar.coverage.exclusions>
     </properties>
 
     <dependencies>
