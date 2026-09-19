@@ -45,6 +45,10 @@ public class UserService {
 
     public User updateActive(Long id, boolean active) {
         User user = this.readById(id);
+        if (!active && "ADMIN".equals(user.getRole())) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT, "User (" + id + ") has role ADMIN and cannot be deactivated");
+        }
         user.setActive(active);
         return this.userRepository.save(user);
     }
