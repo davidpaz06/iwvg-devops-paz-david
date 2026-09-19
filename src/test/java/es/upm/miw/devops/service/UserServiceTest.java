@@ -2,6 +2,7 @@ package es.upm.miw.devops.service;
 
 import es.upm.miw.devops.persistence.User;
 import es.upm.miw.devops.persistence.UserRepository;
+import es.upm.miw.devops.rest.dto.UserActiveRequest;
 import es.upm.miw.devops.rest.dto.UserRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -159,6 +160,34 @@ class UserServiceTest {
                 .extracting(exception -> ((ResponseStatusException) exception).getStatusCode())
                 .isEqualTo(NOT_FOUND);
         verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    void testUpdateActiveBulkFound() {
+        User user1 = new User();
+        user1.setActive(true);
+        User user2 = new User();
+        user2.setActive(true);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user1));
+        when(userRepository.findById(2L)).thenReturn(Optional.of(user2));
+        when(userRepository.save(user1)).thenReturn(user1);
+        when(userRepository.save(user2)).thenReturn(user2);
+
+        List<User> updated = userService.updateActive(List.of(
+                new UserActiveRequest(1L, false),
+                new UserActiveRequest(2L, false)));
+
+        assertThat(updated).extracting(User::isActive).containsExactly(false, false);
+    }
+
+    @Test
+    void testUpdateActiveBulkNotFound() {
+        when(userRepository.findById(999L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> userService.updateActive(List.of(new UserActiveRequest(999L, false))))
+                .isInstanceOf(ResponseStatusException.class)
+                .extracting(exception -> ((ResponseStatusException) exception).getStatusCode())
+                .isEqualTo(NOT_FOUND);
     }
 
     private User billableUser() {
