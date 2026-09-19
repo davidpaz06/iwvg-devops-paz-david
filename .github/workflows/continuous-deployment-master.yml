@@ -5,8 +5,14 @@ on:
       - master
 
 jobs:
-  cd:
-    name: Build & Push GitHub Package & Deploy on Render Docker Image
+  deploy-db:
+    name: Deploy Database
+    uses: ./.github/workflows/cd-database-prod.yml
+    secrets: inherit
+
+  deploy-app:
+    name: Build & Push GitHub Package & Deploy on AWS Lightsail
+    needs: deploy-db
     runs-on: ubuntu-22.04
     steps:
       - name: ⬇️ Checkout repository
@@ -49,14 +55,25 @@ jobs:
             ${{ env.GHCR_URL }}/${{ env.REPOSITORY }}:${{ env.VERSION }}
             ${{ env.GHCR_URL }}/${{ env.REPOSITORY }}:latest
 
-      # 🌐 Render Deployment
-      # 1. En Render: Web Service → Settings → Deploy Hook → copiar la URL COMPLETA
-      # 2. En GitHub: Settings → Secrets and variables → Actions → crear secret: RENDER_DEPLOY_HOOK_TOKEN
-      #    Valor: la URL completa, ej. https://api.render.com/deploy/srv-XXXX?key=YYYY
-#      - name: 🚀 Deploy on Render
-#        run: |
-#          curl --fail -X POST "$RENDER_DEPLOY_HOOK_TOKEN" \
-#          && echo "✅ Deployment succeeded" \
-#          || (echo "❌ Deployment failed" && exit 1)
-#        env:
-#          RENDER_DEPLOY_HOOK_TOKEN: ${{ secrets.RENDER_DEPLOY_HOOK_TOKEN }}
+      - name: 🚀 Deploy on AWS Lightsail
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1.2.5
+        with:
+          host: ${{ secrets.AWS_LIGHTSAIL_IP_MAIN }}
+          username: ${{ secrets.AWS_LIGHTSAIL_USER_MAIN }}
+          key: ${{ secrets.AWS_LIGHTSAIL_SSH_KEY_MAIN }}
+          envs: GHCR_PAT,DB_PASSWORD
+          script: |
+            echo "$GHCR_PAT" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            docker network create devopsNet || true
+            docker pull ghcr.io/davidpaz06/iwvg-devops-paz-david:latest
+            docker stop devops || true
+            docker rm devops || true
+            docker run -d --name devops --network devopsNet -p 8080:8080 \
+              -e SPRING_PROFILES_ACTIVE=prod \
+              -e SPRING_DATABASE_URL="jdbc:postgresql://postgres:5432/iwvgdevopsdb" \
+              -e SPRING_DATABASE_USERNAME="postgres" \
+              -e SPRING_DATABASE_PASSWORD="$DB_PASSWORD" \
+              ghcr.io/davidpaz06/iwvg-devops-paz-david:latest
+        env:
+          GHCR_PAT: ${{ secrets.GHCR_PERSONAL_ACCESS_TOKEN }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}

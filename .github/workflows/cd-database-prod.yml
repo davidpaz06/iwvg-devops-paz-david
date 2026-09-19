@@ -1,0 +1,39 @@
+name: CD - Database Prod
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'docker-compose-db.yml'
+      - 'db/**'
+  workflow_dispatch:   # permite dispararlo a mano, sin esperar un push
+  workflow_call:       # permite que otro workflow lo invoque como job dependiente
+
+jobs:
+  deploy-db:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: ⬇️ Checkout repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: 📤 Copiar compose + scripts SQL a Lightsail
+        uses: appleboy/scp-action@ff85246acaad7bdce478db94a363cd2bf7c90345 # v1.0.0
+        with:
+          host: ${{ secrets.AWS_LIGHTSAIL_IP_MAIN }}
+          username: ${{ secrets.AWS_LIGHTSAIL_USER_MAIN }}
+          key: ${{ secrets.AWS_LIGHTSAIL_SSH_KEY_MAIN }}
+          source: "docker-compose-db.yml,db/*"
+          target: "/home/ubuntu/iwvg-devops"
+
+      - name: 🚀 Arrancar/actualizar Postgres
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1.2.5
+        with:
+          host: ${{ secrets.AWS_LIGHTSAIL_IP_MAIN }}
+          username: ${{ secrets.AWS_LIGHTSAIL_USER_MAIN }}
+          key: ${{ secrets.AWS_LIGHTSAIL_SSH_KEY_MAIN }}
+          envs: DB_PASSWORD
+          script: |
+            cd /home/ubuntu/iwvg-devops
+            docker network create devopsNet || true
+            docker compose -f docker-compose-db.yml -p databases up -d postgres
+        env:
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}

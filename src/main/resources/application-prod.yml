@@ -1,2 +1,22 @@
 server:
-  port: 10000
+  port: 8080
+
+springdoc:
+  api-docs:
+    enabled: true # activo en prod solo para completar la práctica en clase de la asignatura.luego desactivar para entrega.
+  swagger-ui:
+    enabled: true # activo en prod solo para completar la práctica en clase de la asignatura. luego desactivar para entrega.
+
+app:
+  hosting: AWS
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${SPRING_DATABASE_URL}
+    username: ${SPRING_DATABASE_USERNAME}
+    password: ${SPRING_DATABASE_PASSWORD}
