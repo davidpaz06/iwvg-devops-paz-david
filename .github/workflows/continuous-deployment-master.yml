@@ -74,6 +74,7 @@ jobs:
               -e SPRING_DATABASE_URL="jdbc:postgresql://postgres:5432/iwvgdevopsdb" \
               -e SPRING_DATABASE_USERNAME="postgres" \
               -e SPRING_DATABASE_PASSWORD="$DB_PASSWORD" \
+              -e JAVA_TOOL_OPTIONS="-Xmx256m" \
               ghcr.io/davidpaz06/iwvg-devops-paz-david:latest
         env:
           GHCR_PAT: ${{ secrets.GHCR_PERSONAL_ACCESS_TOKEN }}
