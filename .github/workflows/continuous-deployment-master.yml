@@ -80,14 +80,17 @@ jobs:
             echo "⏳ Esperando a que se levante"
             for i in $(seq 1 6); do
               sleep 15
-              STATUS=$(docker inspect --format='{{.State.Health.Status}}' ${{ env.ARTIFACT }} 2>/dev/null)
-              echo "Intento $i: $STATUS"
-              [ "$STATUS" = "healthy" ] && break
+              if curl -sf http://localhost:8080/actuator/health | grep -q '"status":"UP"'; then
+                STATUS="healthy"
+                echo "Intento $i: healthy"
+                break
+              fi
+              echo "Intento $i: not ready"
             done
 
             if [ "$STATUS" != "healthy" ]; then
               echo "❌ Deploy fallido"
-              docker logs --tail 50 ${{ env.ARTIFACT }}
+              docker logs --tail 50 devops
               exit 1
             fi
 
